@@ -15,7 +15,7 @@ export default function Header() {
         <Link to="/partner-login" className="text-sm hover:underline">
           Partner Login
         </Link>
-        <Link to="/find-food">
+        <Link to="/restaurants">
           <Button
             variant="outline"
             className="rounded-full border-primary bg-transparent text-primary"
