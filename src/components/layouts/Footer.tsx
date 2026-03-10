@@ -1,31 +1,38 @@
-import logo from "@/assets/logo-food-mart.svg"
+import logoFoodMart from "@/assets/logo-food-mart.svg"
 import { Link } from "react-router"
+
+const partnerFooterLinks = [
+  { label: "Privacy", to: "/privacy" },
+  { label: "Terms", to: "/terms" },
+  { label: "Contact", to: "/contact" },
+]
 
 export default function Footer() {
   return (
-    <footer className="flex w-full items-center justify-between bg-[#020618CC] px-6 py-8 text-white">
-      {/* left side logo and title */}
-      <div className="flex items-center space-x-3">
-        <img src={logo} alt="Hubnepa logo" className="h-10 w-auto" />
-        {/* <span className="text-lg font-semibold">HUBNEPA</span>
-          <span className="text-xs tracking-widest">FOOD & MART</span> */}
+    <footer className="bg-[#020816]">
+      <div className="flex flex-col gap-5 px-5 py-6 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+        <Link to="/" className="flex items-center">
+          <img
+            src={logoFoodMart}
+            alt="Hubnepa Food and Mart"
+            className="h-10 w-auto"
+          />
+        </Link>
+
+        <nav className="flex flex-wrap items-center gap-6 text-sm text-[#8F9AB7]">
+          {partnerFooterLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.to}
+              className="transition-colors hover:text-white"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <p className="text-sm text-[#56627E]">© 2026 HUBNEPA.</p>
       </div>
-
-      {/* right side links */}
-      <nav className="flex items-center space-x-6 text-gray-300">
-        <Link to="/privacy" className="text-sm hover:underline">
-          Privacy
-        </Link>
-        <Link to="/terms" className="text-sm hover:underline">
-          Terms
-        </Link>
-        <Link to="/contact" className="text-sm hover:underline">
-          Contact
-        </Link>
-      </nav>
-
-      {/* copyright line */}
-      <div className="mt-4 text-xs text-gray-300">© 2026 HUBNEPA.</div>
     </footer>
   )
 }
