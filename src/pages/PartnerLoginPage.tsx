@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 import { useState, type ComponentType } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { z } from "zod"
 
 import authBackground from "@/assets/auth-bg.jpg"
@@ -136,6 +136,7 @@ function PartnerLoginInputField({
 
 export default function PartnerLoginPage() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const navigate = useNavigate()
 
   const values = useForm<PartnerLoginFormValues>({
     resolver: zodResolver(partnerLoginSchema),
@@ -147,7 +148,11 @@ export default function PartnerLoginPage() {
   })
 
   function onSubmit(data: PartnerLoginFormValues) {
+    // TODO: handle authentication logic here (API call, token storage, etc.)
     values.reset(data)
+
+    // redirect to dashboard on successful login
+    navigate("/dashboard", { replace: true })
   }
 
   function togglePasswordVisibility() {
