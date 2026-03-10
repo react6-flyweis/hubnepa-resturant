@@ -161,7 +161,9 @@ export default function PricingSection() {
                         buttonStyles[styleKey]
                       )}
                     >
-                      <Link to="/partner-login">Get Started</Link>
+                      <Link to={`/checkout?plan=${plan.name.toLowerCase()}`}>
+                        Get Started
+                      </Link>
                     </Button>
 
                     <div className="mt-8 border-t border-white/8 pt-7">
@@ -189,7 +191,7 @@ export default function PricingSection() {
         <p className="mt-18 text-center text-sm text-slate-400">
           Need a custom solution?{" "}
           <Link
-            to="/partner-login"
+            to="/checkout?plan=gold"
             className="font-medium text-primary transition-colors hover:text-primary/85"
           >
             Contact our sales team
