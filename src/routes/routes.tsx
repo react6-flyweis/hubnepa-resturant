@@ -7,6 +7,9 @@ const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"))
 const PartnerLoginPage = lazy(() => import("@/pages/PartnerLoginPage"))
 const DashboardPage = lazy(() => import("@/pages/DashboardPage.tsx"))
 const OrderManagementPage = lazy(() => import("@/pages/OrderManagementPage"))
+const InventoryPage = lazy(() => import("@/pages/InventoryPage"))
+const ExpensesPage = lazy(() => import("@/pages/ExpensesPage"))
+const ReportsPage = lazy(() => import("@/pages/ReportsPage"))
 
 import DashLayout from "@/components/layouts/DashLayout"
 import { NotFound } from "@/pages/NotFoundPage"
@@ -34,6 +37,9 @@ export const Routes: RouteObject[] = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "orders", element: <OrderManagementPage /> },
+      { path: "inventory", element: <InventoryPage /> },
+      { path: "expenses", element: <ExpensesPage /> },
+      { path: "reports", element: <ReportsPage /> },
 
       { path: "*", element: <NotFound /> },
     ],
