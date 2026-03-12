@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import type { ExpenseStatus, ExpenseRecord } from "@/pages/ExpensesPage"
+import type { ExpenseStatus, ExpenseRecord } from "@/types/expenses"
 
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 
