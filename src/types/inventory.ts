@@ -5,6 +5,7 @@ export type CookedStatus = "Fresh" | "Expiring Soon" | "Expired"
 
 export type InventoryTab = "beverage" | "kitchen"
 export type KitchenSubTab = "cooked" | "item"
+export type KitchenItemSubTab = "raw" | "solid"
 
 export interface InventoryStat {
   key: InventoryStatKey
