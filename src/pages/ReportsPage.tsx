@@ -1,139 +1,22 @@
 import { useState } from "react"
-import { Link } from "react-router"
-import {
-  CalendarDays,
-  ChevronDown,
-  ClipboardList,
-  DollarSign,
-  Download,
-  TrendingDown,
-  TrendingUp,
-  type LucideIcon,
-  Users,
-  Wallet,
-} from "lucide-react"
-import {
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  XAxis,
-  YAxis,
-} from "recharts"
-
+import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+// report-specific imports
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+  TimeRangeMenu,
+  timeRangeOptions,
+} from "@/components/reports/TimeRangeMenu"
+import { ReportMetricCard } from "@/components/reports/ReportMetricCard"
+import { ExpenseHighlightCard } from "@/components/reports/ExpenseHighlightCard"
+import { RevenueTrendCard } from "@/components/reports/RevenueTrendCard"
+import { SalesMixCard } from "@/components/reports/SalesMixCard"
+import { ExpenseByCategoryCard } from "@/components/reports/ExpenseByCategoryCard"
+import { ExpenseByTitleCard } from "@/components/reports/ExpenseByTitleCard"
+import { TopSellingItemsCard } from "@/components/reports/TopSellingItemsCard"
+import { PeakHoursCard } from "@/components/reports/PeakHoursCard"
 
-type TimeRange = "7d" | "30d" | "month" | "quarter"
-type MetricKey = "revenue" | "orders" | "averageOrderValue" | "customers"
-type SalesMixKey = "starters" | "mains" | "drinks" | "desserts"
-type TrendTone = "positive" | "negative"
-
-interface TimeRangeOption {
-  value: TimeRange
-  label: string
-}
-
-interface MetricCardData {
-  key: MetricKey
-  title: string
-  value: string
-  change: number
-}
-
-interface RevenuePoint {
-  label: string
-  revenue: number
-}
-
-interface SalesMixItem {
-  key: SalesMixKey
-  label: string
-  share: number
-}
-
-interface ReportSnapshot {
-  metrics: MetricCardData[]
-  totalMonthlyExpense: number
-  expenseChange: number
-  revenueTrend: RevenuePoint[]
-  revenueTicks: number[]
-  revenueDescription: string
-  salesMix: SalesMixItem[]
-}
-
-const timeRangeOptions: TimeRangeOption[] = [
-  { value: "7d", label: "Last 7 Days" },
-  { value: "30d", label: "Last 30 Days" },
-  { value: "month", label: "This Month" },
-  { value: "quarter", label: "This Quarter" },
-]
-
-const metricMetaMap: Record<
-  MetricKey,
-  {
-    icon: LucideIcon
-    iconClassName: string
-    iconWrapperClassName: string
-  }
-> = {
-  revenue: {
-    icon: DollarSign,
-    iconClassName: "text-emerald-600",
-    iconWrapperClassName: "bg-emerald-50",
-  },
-  orders: {
-    icon: ClipboardList,
-    iconClassName: "text-blue-600",
-    iconWrapperClassName: "bg-blue-50",
-  },
-  averageOrderValue: {
-    icon: Wallet,
-    iconClassName: "text-amber-500",
-    iconWrapperClassName: "bg-amber-50",
-  },
-  customers: {
-    icon: Users,
-    iconClassName: "text-violet-600",
-    iconWrapperClassName: "bg-violet-50",
-  },
-}
-
-const trendToneMap: Record<TrendTone, string> = {
-  positive: "text-emerald-600",
-  negative: "text-red-500",
-}
-
-const salesMixColorMap: Record<SalesMixKey, string> = {
-  starters: "#19B67A",
-  mains: "#4A7BE8",
-  drinks: "#F59E0B",
-  desserts: "#EF4444",
-}
+import type { TimeRange, ReportSnapshot } from "@/types/reports"
 
 const reportSnapshots: Record<TimeRange, ReportSnapshot> = {
   "7d": {
@@ -182,6 +65,73 @@ const reportSnapshots: Record<TimeRange, ReportSnapshot> = {
       { key: "drinks", label: "Drinks", share: 20 },
       { key: "desserts", label: "Desserts", share: 10 },
     ],
+    expenseByCategory: [
+      { category: "Food Supplies", total: 4250, percentage: 32.5 },
+      { category: "Staff Salary", total: 3800, percentage: 29.1 },
+      { category: "Kitchen Supplies", total: 1200, percentage: 9.2 },
+      { category: "Cleaning Supplies", total: 650, percentage: 5.0 },
+      { category: "Laundry Supplies", total: 420, percentage: 3.2 },
+      { category: "Maintenance", total: 950, percentage: 7.3 },
+      { category: "Emergency Maintenance", total: 300, percentage: 2.3 },
+      { category: "Office Supplies", total: 280, percentage: 2.1 },
+      { category: "Catering Supplies", total: 450, percentage: 3.4 },
+      { category: "Beverage", total: 520, percentage: 4.0 },
+      { category: "Other", total: 250, percentage: 1.9 },
+    ],
+    expenseByTitle: [
+      {
+        title: "Vegetable Supply",
+        category: "Food Supplies",
+        amount: 1850,
+        entries: 12,
+      },
+      {
+        title: "Meat & Poultry",
+        category: "Food Supplies",
+        amount: 2400,
+        entries: 8,
+      },
+      {
+        title: "Staff Wages",
+        category: "Staff Salary",
+        amount: 3800,
+        entries: 15,
+      },
+      {
+        title: "Kitchen Equipment",
+        category: "Kitchen Supplies",
+        amount: 800,
+        entries: 3,
+      },
+      {
+        title: "Utensils & Cookware",
+        category: "Kitchen Supplies",
+        amount: 400,
+        entries: 5,
+      },
+      {
+        title: "Cleaning Product",
+        category: "Cleaning Supplies",
+        amount: 450,
+        entries: 6,
+      },
+    ],
+    topSellingItems: [
+      { name: "Grilled Norwegian Salmon", orders: 145, revenue: 3552.5 },
+      { name: "Crispy Buffalo Wings", orders: 128, revenue: 1662.72 },
+      { name: "Double Cheeseburger", orders: 98, revenue: 1567.02 },
+      { name: "Mushroom Risotto", orders: 85, revenue: 1530.0 },
+      { name: "Spicy Pepperoni Pizza", orders: 76, revenue: 1254.0 },
+    ],
+    peakHours: [
+      { label: "11am", orders: 25 },
+      { label: "1pm", orders: 45 },
+      { label: "3pm", orders: 30 },
+      { label: "5pm", orders: 35 },
+      { label: "7pm", orders: 65 },
+      { label: "9pm", orders: 80 },
+      { label: "11pm", orders: 60 },
+    ],
   },
   "30d": {
     metrics: [
@@ -229,6 +179,10 @@ const reportSnapshots: Record<TimeRange, ReportSnapshot> = {
       { key: "drinks", label: "Drinks", share: 18 },
       { key: "desserts", label: "Desserts", share: 13 },
     ],
+    expenseByCategory: [],
+    expenseByTitle: [],
+    topSellingItems: [],
+    peakHours: [],
   },
   month: {
     metrics: [
@@ -274,6 +228,10 @@ const reportSnapshots: Record<TimeRange, ReportSnapshot> = {
       { key: "drinks", label: "Drinks", share: 21 },
       { key: "desserts", label: "Desserts", share: 12 },
     ],
+    expenseByCategory: [],
+    expenseByTitle: [],
+    topSellingItems: [],
+    peakHours: [],
   },
   quarter: {
     metrics: [
@@ -317,34 +275,12 @@ const reportSnapshots: Record<TimeRange, ReportSnapshot> = {
       { key: "drinks", label: "Drinks", share: 19 },
       { key: "desserts", label: "Desserts", share: 12 },
     ],
+    expenseByCategory: [],
+    expenseByTitle: [],
+    topSellingItems: [],
+    peakHours: [],
   },
 }
-
-const revenueChartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "#19B67A",
-  },
-} satisfies ChartConfig
-
-const salesMixChartConfig = {
-  starters: {
-    label: "Starters",
-    color: salesMixColorMap.starters,
-  },
-  mains: {
-    label: "Mains",
-    color: salesMixColorMap.mains,
-  },
-  drinks: {
-    label: "Drinks",
-    color: salesMixColorMap.drinks,
-  },
-  desserts: {
-    label: "Desserts",
-    color: salesMixColorMap.desserts,
-  },
-} satisfies ChartConfig
 
 export default function ReportsPage() {
   const [selectedRange, setSelectedRange] = useState<TimeRange>("7d")
@@ -385,18 +321,15 @@ export default function ReportsPage() {
             </Button>
           </div>
         </div>
-
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {report.metrics.map((metric) => (
             <ReportMetricCard key={metric.key} metric={metric} />
           ))}
         </div>
-
         <ExpenseHighlightCard
           amount={report.totalMonthlyExpense}
           change={report.expenseChange}
         />
-
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.9fr)_minmax(280px,0.9fr)]">
           <RevenueTrendCard
             data={report.revenueTrend}
@@ -405,273 +338,22 @@ export default function ReportsPage() {
           />
           <SalesMixCard items={report.salesMix} />
         </div>
+        {/* expense overview section */}
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Expense Overview
+          </h2>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <ExpenseByCategoryCard data={report.expenseByCategory} />
+            <ExpenseByTitleCard data={report.expenseByTitle} />
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TopSellingItemsCard items={report.topSellingItems} />
+          <PeakHoursCard data={report.peakHours} />
+        </div>
       </div>
     </div>
   )
-}
-
-function TimeRangeMenu({
-  selectedRange,
-  selectedRangeLabel,
-  onChange,
-}: {
-  selectedRange: TimeRange
-  selectedRangeLabel: string
-  onChange: (value: TimeRange) => void
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="lg"
-          className="h-10 min-w-[148px] justify-between rounded-xl border-slate-200 bg-white px-3 text-slate-700 shadow-sm hover:bg-slate-50"
-        >
-          <span className="flex items-center gap-2">
-            <CalendarDays className="size-4 text-slate-400" />
-            <span>{selectedRangeLabel}</span>
-          </span>
-          <ChevronDown className="size-4 text-slate-400" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44 rounded-xl">
-        <DropdownMenuLabel>Time Range</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup
-          value={selectedRange}
-          onValueChange={(value) => onChange(value as TimeRange)}
-        >
-          {timeRangeOptions.map((option) => (
-            <DropdownMenuRadioItem key={option.value} value={option.value}>
-              {option.label}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-function ReportMetricCard({ metric }: { metric: MetricCardData }) {
-  const meta = metricMetaMap[metric.key]
-  const tone: TrendTone = metric.change >= 0 ? "positive" : "negative"
-  const TrendIcon = tone === "positive" ? TrendingUp : TrendingDown
-  const Icon = meta.icon
-
-  return (
-    <Card className="rounded-3xl border border-slate-200/80 bg-white py-0 shadow-sm">
-      <CardContent className="px-5 py-5">
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span
-            className={cn(
-              "inline-flex size-5 items-center justify-center rounded-full",
-              meta.iconWrapperClassName
-            )}
-          >
-            <Icon className={cn("size-3.5", meta.iconClassName)} />
-          </span>
-          <span>{metric.title}</span>
-        </div>
-
-        <div className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-          {metric.value}
-        </div>
-
-        <div
-          className={cn(
-            "mt-3 flex items-center gap-1 text-sm font-medium",
-            trendToneMap[tone]
-          )}
-        >
-          <TrendIcon className="size-4" />
-          <span>{formatPercentageDelta(metric.change)}</span>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function ExpenseHighlightCard({
-  amount,
-  change,
-}: {
-  amount: number
-  change: number
-}) {
-  return (
-    <Card className="mt-4 rounded-3xl border border-red-300 bg-linear-to-r from-red-50/70 via-white to-white py-0 shadow-sm shadow-red-100/40">
-      <CardContent className="px-5 py-5 sm:px-6">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex size-8 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-            <Wallet className="size-4" />
-          </span>
-
-          <div>
-            <p className="text-sm font-medium text-slate-500">
-              Total Monthly Expense
-            </p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
-              {formatCurrency(amount)}
-            </p>
-            <p className="mt-2 text-sm font-medium text-emerald-600">
-              {formatPercentageDelta(change)} vs last period
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function RevenueTrendCard({
-  data,
-  description,
-  ticks,
-}: {
-  data: RevenuePoint[]
-  description: string
-  ticks: number[]
-}) {
-  return (
-    <Card className="rounded-3xl border border-slate-200/80 bg-white py-0 shadow-sm">
-      <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 py-5">
-        <div>
-          <CardTitle className="text-base font-semibold text-slate-900">
-            Revenue Trends
-          </CardTitle>
-          <CardDescription className="mt-1 text-sm text-slate-500">
-            {description}
-          </CardDescription>
-        </div>
-
-        <Link
-          to="/dashboard/expenses"
-          className="pt-0.5 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
-        >
-          View Details
-        </Link>
-      </CardHeader>
-
-      <CardContent className="px-3 pb-4 sm:px-5">
-        <ChartContainer
-          config={revenueChartConfig}
-          className="aspect-auto h-[300px] w-full max-w-none"
-        >
-          <LineChart
-            data={data}
-            margin={{ top: 12, right: 10, left: 4, bottom: 0 }}
-          >
-            <CartesianGrid stroke="#E5E7EB" strokeDasharray="4 4" />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              tick={{ fontSize: 12, fill: "#94A3B8" }}
-            />
-            <YAxis
-              width={42}
-              tickLine={false}
-              axisLine={false}
-              ticks={ticks}
-              domain={[ticks[0], ticks[ticks.length - 1]]}
-              tick={{ fontSize: 12, fill: "#94A3B8" }}
-            />
-            <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-            <Line
-              type="monotone"
-              dataKey="revenue"
-              stroke="#19B67A"
-              strokeWidth={2.5}
-              dot={{ r: 4, fill: "#19B67A", stroke: "#FFFFFF", strokeWidth: 2 }}
-              activeDot={{
-                r: 5,
-                fill: "#19B67A",
-                stroke: "#FFFFFF",
-                strokeWidth: 2,
-              }}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  )
-}
-
-function SalesMixCard({ items }: { items: SalesMixItem[] }) {
-  return (
-    <Card className="rounded-3xl border border-slate-200/80 bg-white py-0 shadow-sm">
-      <CardHeader className="px-5 py-5">
-        <CardTitle className="text-base font-semibold text-slate-900">
-          Sales Mix
-        </CardTitle>
-        <CardDescription className="mt-1 text-sm text-slate-500">
-          Menu category contribution for the selected period.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="px-5 pb-5">
-        <ChartContainer
-          config={salesMixChartConfig}
-          className="mx-auto aspect-auto h-[220px] w-full max-w-[220px]"
-        >
-          <PieChart>
-            <Pie
-              data={items}
-              dataKey="share"
-              nameKey="label"
-              innerRadius={58}
-              outerRadius={84}
-              paddingAngle={2}
-              strokeWidth={0}
-            >
-              {items.map((item) => (
-                <Cell
-                  key={item.key}
-                  fill={salesMixColorMap[item.key]}
-                  stroke="transparent"
-                />
-              ))}
-            </Pie>
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-          </PieChart>
-        </ChartContainer>
-
-        <div className="mt-4 space-y-3">
-          {items.map((item) => (
-            <div
-              key={item.key}
-              className="flex items-center justify-between gap-3"
-            >
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <span
-                  className="inline-flex size-2.5 rounded-full"
-                  style={{ backgroundColor: salesMixColorMap[item.key] }}
-                />
-                <span>{item.label}</span>
-              </div>
-
-              <span className="text-sm font-medium text-slate-700">
-                {item.share}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function formatPercentageDelta(value: number) {
-  const sign = value > 0 ? "+" : ""
-  return `${sign}${value.toFixed(1)}%`
 }
