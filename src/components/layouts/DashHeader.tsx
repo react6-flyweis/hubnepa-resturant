@@ -1,13 +1,15 @@
 import { Bell, Search } from "lucide-react"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { cn } from "@/lib/utils"
 
 interface User {
   name: string
@@ -20,12 +22,16 @@ interface User {
  * bell with badge, and user information (name, role, avatar).
  */
 export default function DashHeader() {
+  const location = useLocation()
+
   // TODO: replace with real user data when available
   const user: User = {
     name: "Sarah Chen",
     role: "Manager",
     avatarUrl: "/avatar-placeholder.png",
   }
+
+  const isNotificationsPage = location.pathname === "/dashboard/notifications"
 
   return (
     <header className="flex w-full items-center justify-between bg-white px-6 py-4 shadow">
@@ -49,10 +55,21 @@ export default function DashHeader() {
 
       {/* right side - notifications + profile */}
       <div className="flex items-center space-x-6">
-        <button className="relative rounded-full p-2 hover:bg-gray-100">
-          <Bell className="h-5 w-5 text-gray-600" />
-          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+        <Button
+          asChild
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative rounded-full text-gray-600 hover:bg-gray-100",
+            isNotificationsPage &&
+              "bg-primary/10 text-primary hover:bg-primary/15"
+          )}
+        >
+          <Link to="/dashboard/notifications" aria-label="View notifications">
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
+          </Link>
+        </Button>
 
         <div className="h-6 w-px bg-gray-300" />
 
