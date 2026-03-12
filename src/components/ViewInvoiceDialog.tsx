@@ -18,6 +18,8 @@ const statusColorMap: Record<ExpenseStatus, string> = {
     "border-amber-200 bg-amber-100 text-amber-700 shadow-[0_4px_14px_rgba(245,158,11,0.16)]",
   Scheduled:
     "border-slate-200 bg-slate-100 text-slate-600 shadow-[0_4px_14px_rgba(100,116,139,0.12)]",
+  "Due Soon":
+    "border-red-200 bg-red-100 text-red-700 shadow-[0_4px_14px_rgba(239,68,68,0.16)]",
 }
 
 const restaurantDetails = {
