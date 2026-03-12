@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { InventoryStatCard } from "@/components/inventory/InventoryStatCard"
 import { InventoryTabs } from "@/components/inventory/InventoryTabs"
 import { KitchenTabs } from "@/components/inventory/KitchenTabs"
+import { KitchenItemTabs } from "@/components/inventory/KitchenItemTabs"
 import { InventoryTable } from "@/components/inventory/InventoryTable"
 import { CookedFoodTable } from "@/components/inventory/CookedFoodTable"
 import type {
@@ -20,6 +21,7 @@ import type {
   CookedStatus,
   InventoryTab,
   KitchenSubTab,
+  KitchenItemSubTab,
   CookedFood,
   InventoryStat,
 } from "@/types/inventory"
@@ -47,98 +49,137 @@ const inventoryStats: InventoryStat[] = [
   },
 ]
 
-const inventoryItemsByTab: Record<InventoryTab, InventoryItem[]> = {
-  beverage: [
+const initialBeverageItems: InventoryItem[] = [
+  {
+    name: "Coca Cola",
+    category: "Soft Drink",
+    currentStock: 150,
+    minThreshold: 50,
+    unitType: "Bottles",
+    supplier: "Beverages Co.",
+    status: "In Stock",
+  },
+  {
+    name: "Orange Juice",
+    category: "Juice",
+    currentStock: 530,
+    minThreshold: 40,
+    unitType: "Liters",
+    supplier: "Fresh Drinks Ltd.",
+    status: "In Stock",
+  },
+  {
+    name: "Mineral Water",
+    category: "Water",
+    currentStock: 200,
+    minThreshold: 100,
+    unitType: "Bottles",
+    supplier: "Pure Water Inc.",
+    status: "In Stock",
+  },
+  {
+    name: "Iced Tea",
+    category: "Tea",
+    currentStock: 10,
+    minThreshold: 30,
+    unitType: "Bottles",
+    supplier: "Tea Masters",
+    status: "Low",
+  },
+  {
+    name: "Coffee Beans",
+    category: "Coffee",
+    currentStock: 0,
+    minThreshold: 20,
+    unitType: "Kg",
+    supplier: "Coffee World",
+    status: "Out of Stock",
+  },
+]
+
+const initialKitchenItemsByType: Record<KitchenItemSubTab, InventoryItem[]> = {
+  raw: [
     {
-      name: "Coca Cola",
-      category: "Soft Drink",
-      currentStock: 150,
-      minThreshold: 50,
-      unitType: "Bottles",
-      supplier: "Beverages Co.",
-      status: "In Stock",
-    },
-    {
-      name: "Orange Juice",
-      category: "Juice",
-      currentStock: 530,
-      minThreshold: 40,
-      unitType: "Liters",
-      supplier: "Fresh Drinks Ltd.",
-      status: "In Stock",
-    },
-    {
-      name: "Mineral Water",
-      category: "Water",
-      currentStock: 200,
-      minThreshold: 100,
-      unitType: "Bottles",
-      supplier: "Pure Water Inc.",
-      status: "In Stock",
-    },
-    {
-      name: "Iced Tea",
-      category: "Tea",
-      currentStock: 10,
-      minThreshold: 30,
-      unitType: "Bottles",
-      supplier: "Tea Masters",
-      status: "Low",
-    },
-    {
-      name: "Coffee Beans",
-      category: "Coffee",
-      currentStock: 0,
+      name: "Tomatoes",
+      category: "Produce",
+      currentStock: 50,
       minThreshold: 20,
       unitType: "Kg",
-      supplier: "Coffee World",
-      status: "Out of Stock",
-    },
-  ],
-  kitchen: [
-    {
-      name: "Basmati Rice",
-      category: "Grains",
-      currentStock: 92,
-      minThreshold: 40,
-      unitType: "Kg",
-      supplier: "Himalayan Foods",
+      supplier: "Fresh Farm",
       status: "In Stock",
     },
     {
       name: "Chicken Breast",
       category: "Protein",
-      currentStock: 32,
-      minThreshold: 24,
+      currentStock: 15,
+      minThreshold: 25,
       unitType: "Kg",
-      supplier: "Fresh Farm Supply",
+      supplier: "Meat Market",
+      status: "Low",
+    },
+    {
+      name: "Rice",
+      category: "Grains",
+      currentStock: 100,
+      minThreshold: 30,
+      unitType: "Kg",
+      supplier: "Grain Co.",
       status: "In Stock",
     },
     {
-      name: "Olive Oil",
-      category: "Cooking Oil",
-      currentStock: 8,
-      minThreshold: 12,
-      unitType: "Liters",
-      supplier: "Mediterranean Traders",
-      status: "Low",
-    },
-    {
-      name: "Mozzarella",
-      category: "Dairy",
-      currentStock: 4,
-      minThreshold: 10,
-      unitType: "Kg",
-      supplier: "Dairy Valley",
-      status: "Low",
-    },
-    {
-      name: "Bell Peppers",
-      category: "Vegetables",
+      name: "Onions",
+      category: "Produce",
       currentStock: 0,
       minThreshold: 15,
       unitType: "Kg",
-      supplier: "Green Basket",
+      supplier: "Fresh Farm",
+      status: "Out of Stock",
+    },
+  ],
+  solid: [
+    {
+      name: "Disposable Gloves",
+      category: "Safety",
+      currentStock: 220,
+      minThreshold: 80,
+      unitType: "Pairs",
+      supplier: "SafeWork Supplies",
+      status: "In Stock",
+    },
+    {
+      name: "Aluminum Foil",
+      category: "Packaging",
+      currentStock: 45,
+      minThreshold: 20,
+      unitType: "Rolls",
+      supplier: "Kitchen Pack",
+      status: "In Stock",
+    },
+    {
+      name: "Gas Lighter",
+      category: "Utility",
+      currentStock: 12,
+      minThreshold: 12,
+      unitType: "Pieces",
+      supplier: "Utility Depot",
+      status: "In Stock",
+    },
+    {
+      name: "Dishwashing Liquid",
+      category: "Cleaning",
+      currentStock: 6,
+      minThreshold: 10,
+      unitType: "Liters",
+      supplier: "CleanPro",
+      status: "Low",
+    },
+    {
+      name: "Storage Bins",
+      category: "Storage",
+      currentStock: 0,
+      minThreshold: 4,
+      unitType: "Pieces",
+      supplier: "Warehouse Works",
       status: "Out of Stock",
     },
   ],
@@ -183,19 +224,23 @@ export default function InventoryPage() {
   // additional local state for the kitchen section
   const [activeKitchenTab, setActiveKitchenTab] =
     useState<KitchenSubTab>("cooked")
+  const [activeKitchenItemTab, setActiveKitchenItemTab] =
+    useState<KitchenItemSubTab>("raw")
   const [cookedFoods, setCookedFoods] =
     useState<CookedFood[]>(initialCookedFoods)
 
-  // make the sample data mutable so that new items can be added
-  const [itemsByTab, setItemsByTab] =
-    useState<Record<InventoryTab, InventoryItem[]>>(inventoryItemsByTab)
+  const [beverageItems, setBeverageItems] =
+    useState<InventoryItem[]>(initialBeverageItems)
+  const [kitchenItemsByType, setKitchenItemsByType] = useState<
+    Record<KitchenItemSubTab, InventoryItem[]>
+  >(initialKitchenItemsByType)
 
   // determine which items are currently being displayed
   const activeItems =
     activeTab === "beverage"
-      ? itemsByTab.beverage
+      ? beverageItems
       : activeKitchenTab === "item"
-        ? itemsByTab.kitchen
+        ? kitchenItemsByType[activeKitchenItemTab]
         : [] // cooked handled separately
 
   const activeCooked = activeTab === "kitchen" && activeKitchenTab === "cooked"
@@ -205,7 +250,9 @@ export default function InventoryPage() {
       ? "Add Beverage"
       : activeCooked
         ? "Add Cooked Food"
-        : "Add Raw Food Item"
+        : activeKitchenItemTab === "raw"
+          ? "Add Raw Food Item"
+          : "Add Solid Item"
 
   const firstColumnLabel =
     activeTab === "beverage"
@@ -227,14 +274,16 @@ export default function InventoryPage() {
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
-            onClick={() => setIsAdjustmentOpen(true)}
-          >
-            Stock Adjustment
-          </Button>
+          {activeTab !== "kitchen" && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
+              onClick={() => setIsAdjustmentOpen(true)}
+            >
+              Stock Adjustment
+            </Button>
+          )}
           <Button
             size="lg"
             className="h-10 rounded-lg bg-[#059669] px-4 text-white hover:bg-[#047857]"
@@ -254,16 +303,18 @@ export default function InventoryPage() {
 
       <Card className="mt-6 rounded-2xl border-0 bg-white py-0 shadow-[0_0_0_1px_#E5E7EB]">
         {/* stock adjustment dialog */}
-        <StockAdjustmentDialog
-          open={isAdjustmentOpen}
-          onClose={() => setIsAdjustmentOpen(false)}
-          items={activeItems}
-          itemLabel={activeTab === "beverage" ? "Beverage" : "Ingredient"}
-          onApply={(values) => {
-            // placeholder for real update logic
-            console.log("adjustment", values)
-          }}
-        />
+        {activeTab !== "kitchen" && (
+          <StockAdjustmentDialog
+            open={isAdjustmentOpen}
+            onClose={() => setIsAdjustmentOpen(false)}
+            items={activeItems}
+            itemLabel={activeTab === "beverage" ? "Beverage" : "Ingredient"}
+            onApply={(values) => {
+              // placeholder for real update logic
+              console.log("adjustment", values)
+            }}
+          />
+        )}
 
         {/* add new item or cooked food depending on the active view */}
         {activeCooked ? (
@@ -329,9 +380,17 @@ export default function InventoryPage() {
                 status,
               }
 
-              setItemsByTab((prev) => ({
+              if (activeTab === "beverage") {
+                setBeverageItems((prev) => [...prev, newItem])
+                return
+              }
+
+              setKitchenItemsByType((prev) => ({
                 ...prev,
-                [activeTab]: [...prev[activeTab], newItem],
+                [activeKitchenItemTab]: [
+                  ...prev[activeKitchenItemTab],
+                  newItem,
+                ],
               }))
             }}
           />
@@ -346,6 +405,15 @@ export default function InventoryPage() {
           />
         )}
 
+        {activeTab === "kitchen" && activeKitchenTab === "item" && (
+          <div className="px-4 pt-4 sm:px-6">
+            <KitchenItemTabs
+              activeTab={activeKitchenItemTab}
+              onChange={setActiveKitchenItemTab}
+            />
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <p className="text-sm text-slate-500">
             Total:
@@ -353,15 +421,17 @@ export default function InventoryPage() {
           </p>
 
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-9 rounded-lg border-slate-200 bg-white px-3 text-slate-600 hover:bg-slate-50"
-              onClick={() => setIsAdjustmentOpen(true)}
-            >
-              <RefreshCcw className="size-4" />
-              Stock Adjustment
-            </Button>
+            {activeTab !== "kitchen" && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-9 rounded-lg border-slate-200 bg-white px-3 text-slate-600 hover:bg-slate-50"
+                onClick={() => setIsAdjustmentOpen(true)}
+              >
+                <RefreshCcw className="size-4" />
+                Stock Adjustment
+              </Button>
+            )}
             <Button
               size="lg"
               className="h-9 rounded-lg bg-[#059669] px-3 text-white hover:bg-[#047857]"
