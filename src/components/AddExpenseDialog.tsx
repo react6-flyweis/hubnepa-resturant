@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog"
 
 // reuse types from expenses page so we stay in sync
-import type { ExpenseRecordType, ExpenseStatus } from "@/pages/ExpensesPage"
+import type { ExpenseRecordType, ExpenseStatus } from "@/types/expenses"
 
 // shape used by the dialog; callers can map this into whatever project model makes
 // sense (e.g. ExpenseRecord used on the page)
@@ -197,6 +197,7 @@ export function AddExpenseDialog({
               <option value="Paid">Paid</option>
               <option value="Pending">Pending</option>
               <option value="Scheduled">Scheduled</option>
+              <option value="Due Soon">Due Soon</option>
             </select>
           </div>
 
