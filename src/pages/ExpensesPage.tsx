@@ -1,61 +1,33 @@
 import { useState } from "react"
 import {
   Download,
-  EllipsisVertical,
   Plus,
-  Search,
   TrendingDown,
   type LucideIcon,
   Users,
   Wrench,
+  Search,
 } from "lucide-react"
 
 import { AddExpenseDialog } from "@/components/AddExpenseDialog"
 import type { NewExpense } from "@/components/AddExpenseDialog"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
 import { ViewInvoiceDialog } from "@/components/ViewInvoiceDialog"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 
-export type ExpenseView = "all" | "payroll" | "maintenance"
-export type ExpenseRecordType = Exclude<ExpenseView, "all">
-export type ExpenseStatus = "Paid" | "Pending" | "Scheduled"
-export type ExpenseStatKey = "total" | "payroll" | "maintenance"
+import { AllTransactionsTab } from "@/components/expenses/AllTransactionsTab"
+import { MaintenanceLogsTab } from "@/components/expenses/MaintenanceLogsTab"
+import { PayrollTab } from "@/components/expenses/PayrollTab"
 
-interface ExpenseViewOption {
-  key: ExpenseView
-  label: string
-}
-
-export interface ExpenseRecord {
-  id: string
-  type: ExpenseRecordType
-  name: string
-  subtitle: string
-  detail: string
-  month: string
-  amount: number
-  status: ExpenseStatus
-  actionLabel: string
-}
+import type {
+  ExpenseView,
+  ExpenseStatKey,
+  ExpenseRecord,
+} from "@/types/expenses"
+import { Input } from "@/components/ui/input"
 
 interface ExpenseStat {
   key: ExpenseStatKey
@@ -63,19 +35,6 @@ interface ExpenseStat {
   value: string
   badgeLabel: string
 }
-
-interface TableCopy {
-  title: string
-  firstColumn: string
-  secondColumn: string
-  actionButtonLabel: string
-}
-
-const expenseViewOptions: ExpenseViewOption[] = [
-  { key: "all", label: "All Transactions" },
-  { key: "payroll", label: "Salaries & Payroll" },
-  { key: "maintenance", label: "Maintenance Logs" },
-]
 
 // initial static data; will be used to initialize state so new records can be added
 const initialExpenseRecords: ExpenseRecord[] = [
@@ -85,6 +44,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "John Doe",
     subtitle: "Kitchen Team",
     detail: "Head Chef",
+    date: "2026-01-01",
     month: "January 2026",
     amount: 3200,
     status: "Paid",
@@ -96,6 +56,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Sarah Smith",
     subtitle: "Operations",
     detail: "Restaurant Manager",
+    date: "2026-01-01",
     month: "January 2026",
     amount: 2800,
     status: "Paid",
@@ -107,6 +68,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Mike Johnson",
     subtitle: "Kitchen Team",
     detail: "Sous Chef",
+    date: "2026-01-01",
     month: "January 2026",
     amount: 2100,
     status: "Pending",
@@ -118,6 +80,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Emily Chen",
     subtitle: "Service Team",
     detail: "Waitstaff",
+    date: "2026-01-01",
     month: "January 2026",
     amount: 1500,
     status: "Paid",
@@ -129,6 +92,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Everest Cooling",
     subtitle: "Equipment vendor",
     detail: "HVAC Service",
+    date: "2026-01-15",
     month: "January 2026",
     amount: 620.5,
     status: "Paid",
@@ -140,6 +104,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "KitchenCare Pro",
     subtitle: "Facility partner",
     detail: "Oven Repair",
+    date: "2026-01-20",
     month: "January 2026",
     amount: 570.5,
     status: "Pending",
@@ -151,6 +116,7 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Bright Supplies",
     subtitle: "Operations vendor",
     detail: "Cleaning Materials",
+    date: "2026-01-10",
     month: "January 2026",
     amount: 425,
     status: "Scheduled",
@@ -162,33 +128,25 @@ const initialExpenseRecords: ExpenseRecord[] = [
     name: "Metro Electrical",
     subtitle: "Service partner",
     detail: "Lighting Maintenance",
+    date: "2026-01-05",
     month: "January 2026",
     amount: 318.5,
     status: "Paid",
     actionLabel: "Invoice",
   },
+  {
+    id: "mnt-005",
+    type: "maintenance",
+    name: "City Utilities",
+    subtitle: "Vendor",
+    detail: "Electricity Bill",
+    date: "2026-02-05",
+    month: "February 2026",
+    amount: 420,
+    status: "Due Soon",
+    actionLabel: "Invoice",
+  },
 ]
-
-const tableCopyMap: Record<ExpenseView, TableCopy> = {
-  all: {
-    title: "All Transactions",
-    firstColumn: "Entry",
-    secondColumn: "Category",
-    actionButtonLabel: "Expense Summary",
-  },
-  payroll: {
-    title: "Payroll Management",
-    firstColumn: "Employee",
-    secondColumn: "Role",
-    actionButtonLabel: "Payroll Summary",
-  },
-  maintenance: {
-    title: "Maintenance Logs",
-    firstColumn: "Vendor",
-    secondColumn: "Service",
-    actionButtonLabel: "Maintenance Report",
-  },
-}
 
 const statMetaMap: Record<
   ExpenseStatKey,
@@ -219,25 +177,16 @@ const statMetaMap: Record<
   },
 }
 
-const statusColorMap: Record<ExpenseStatus, string> = {
-  Paid: "border-transparent bg-emerald-50 text-emerald-700",
-  Pending: "border-transparent bg-amber-50 text-amber-700",
-  Scheduled: "border-transparent bg-slate-100 text-slate-600",
-}
-
-const avatarColorMap: Record<ExpenseRecordType, string> = {
-  payroll: "bg-slate-100 text-slate-700",
-  maintenance: "bg-orange-50 text-orange-600",
-}
-
 export default function ExpensesPage() {
   const [activeView, setActiveView] = useState<ExpenseView>("all")
-  const [searchQuery, setSearchQuery] = useState("")
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<ExpenseRecord | null>(
     null
   )
   const [addDialogOpen, setAddDialogOpen] = useState(false)
+
+  // for the global filter input
+  const [filterQuery, setFilterQuery] = useState<string>("")
 
   // stateful records so new expenses can be added
   const [records, setRecords] = useState<ExpenseRecord[]>(initialExpenseRecords)
@@ -270,23 +219,18 @@ export default function ExpensesPage() {
     },
   ]
 
-  const visibleRecords = records.filter((record) => {
-    const matchesView = activeView === "all" || record.type === activeView
-    const normalizedQuery = searchQuery.trim().toLowerCase()
-    const matchesQuery =
-      normalizedQuery.length === 0 ||
-      [record.name, record.subtitle, record.detail, record.month, record.status]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery)
+  const expenseTabs: { key: ExpenseView; label: string }[] = [
+    { key: "all", label: "All Transactions" },
+    { key: "payroll", label: "Salaries & Payroll" },
+    { key: "maintenance", label: "Maintenance Logs" },
+  ]
 
-    return matchesView && matchesQuery
-  })
-
-  const activeTableCopy = tableCopyMap[activeView]
+  // filtered records for each view
+  const payrollRecords = records.filter((r) => r.type === "payroll")
 
   function handleAddExpense(values: NewExpense) {
-    const formattedMonth = new Date(values.date).toLocaleDateString("en-US", {
+    const dateObj = new Date(values.date)
+    const formattedMonth = dateObj.toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
     })
@@ -297,6 +241,7 @@ export default function ExpensesPage() {
       name: values.title,
       subtitle: values.category,
       detail: values.notes ?? "",
+      date: values.date,
       month: formattedMonth,
       amount: values.amount,
       status: values.status,
@@ -344,165 +289,60 @@ export default function ExpensesPage() {
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      {/* tabs for switching views */}
+      <div className="my-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="inline-flex rounded-xl bg-slate-100 p-1">
-          {expenseViewOptions.map((option) => (
+          {expenseTabs.map((tab) => (
             <button
-              key={option.key}
+              key={tab.key}
               type="button"
+              onClick={() => setActiveView(tab.key)}
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                activeView === option.key
+                activeView === tab.key
                   ? "bg-white text-slate-700 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
               )}
-              onClick={() => setActiveView(option.key)}
             >
-              {option.label}
+              {tab.label}
             </button>
           ))}
         </div>
-
-        <div className="relative w-full lg:max-w-xs">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Filter records..."
-            className="h-10 rounded-xl border-slate-200 bg-white pl-9 text-slate-600 placeholder:text-slate-400"
-          />
+        <div className="mt-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="relative w-full lg:max-w-xs">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              value={filterQuery}
+              onChange={(e) => setFilterQuery(e.target.value)}
+              placeholder="Filter records..."
+              className="h-10 rounded-lg border-slate-200 bg-white pl-9 text-slate-600 placeholder:text-slate-400"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-2xl font-semibold text-slate-900">
-          {activeTableCopy.title}
-        </h2>
-
-        <Button
-          variant="outline"
-          size="lg"
-          className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
-        >
-          <Download className="size-4" />
-          {activeTableCopy.actionButtonLabel}
-        </Button>
-      </div>
-
-      <Card className="mt-4 rounded-2xl border-0 bg-white py-0 shadow-[0_0_0_1px_#E5E7EB]">
-        <CardContent className="px-0 pb-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-200 bg-slate-50/70 hover:bg-slate-50/70">
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  {activeTableCopy.firstColumn}
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  {activeTableCopy.secondColumn}
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  Month
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  Amount
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  Status
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-slate-500 uppercase">
-                  Action
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {visibleRecords.map((record) => (
-                <TableRow key={record.id} className="border-slate-100">
-                  <TableCell className="px-6 py-4 align-top whitespace-normal">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-10" size="lg">
-                        <AvatarFallback
-                          className={cn(
-                            "text-sm font-semibold",
-                            avatarColorMap[record.type]
-                          )}
-                        >
-                          {getInitials(record.name)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div>
-                        <p className="text-base font-semibold text-slate-900">
-                          {record.name}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {record.subtitle}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-[15px] whitespace-normal text-slate-600">
-                    {record.detail}
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-[15px] whitespace-normal text-slate-600">
-                    {record.month}
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-lg font-semibold text-slate-900">
-                    {formatCurrency(record.amount)}
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <ExpenseStatusBadge status={record.status} />
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-emerald-600">
-                        {record.actionLabel}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            className="size-8 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                            aria-label={`Open actions for ${record.name}`}
-                          >
-                            <EllipsisVertical className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedRecord(record)
-                              setInvoiceDialogOpen(true)
-                            }}
-                          >
-                            View Invoice
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => console.log("download", record.id)}
-                          >
-                            Download Receipt
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-
-              {visibleRecords.length === 0 ? (
-                <TableRow className="border-slate-100 hover:bg-transparent">
-                  <TableCell
-                    colSpan={6}
-                    className="px-6 py-12 text-center text-sm text-slate-500"
-                  >
-                    No expense records match the current filters.
-                  </TableCell>
-                </TableRow>
-              ) : null}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* content area */}
+      {activeView === "all" ? (
+        <AllTransactionsTab
+          records={records}
+          searchQuery={filterQuery}
+          onViewInvoice={(record) => {
+            setSelectedRecord(record)
+            setInvoiceDialogOpen(true)
+          }}
+        />
+      ) : activeView === "payroll" ? (
+        <PayrollTab
+          records={payrollRecords}
+          searchQuery={filterQuery}
+          onViewInvoice={(record) => {
+            setSelectedRecord(record)
+            setInvoiceDialogOpen(true)
+          }}
+        />
+      ) : (
+        <MaintenanceLogsTab searchQuery={filterQuery} />
+      )}
       {/* add new expense dialog */}
       <AddExpenseDialog
         open={addDialogOpen}
@@ -525,7 +365,7 @@ function ExpenseStatCard({ stat }: { stat: ExpenseStat }) {
   const Icon = meta.icon
 
   return (
-    <Card className="rounded-2xl border-0 bg-white py-6 shadow-[0_0_0_1px_#E5E7EB]">
+    <Card className="">
       <CardContent className="flex items-start justify-between gap-4 px-5">
         <div className="flex items-start gap-4">
           <div
@@ -556,35 +396,4 @@ function ExpenseStatCard({ stat }: { stat: ExpenseStat }) {
       </CardContent>
     </Card>
   )
-}
-
-function ExpenseStatusBadge({ status }: { status: ExpenseStatus }) {
-  return (
-    <Badge
-      variant="outline"
-      className={cn(
-        "rounded-full px-2.5 py-1 text-[11px] font-medium",
-        statusColorMap[status]
-      )}
-    >
-      {status}
-    </Badge>
-  )
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(value)
-}
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
 }
