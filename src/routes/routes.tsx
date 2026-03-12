@@ -10,6 +10,9 @@ const OrderManagementPage = lazy(() => import("@/pages/OrderManagementPage"))
 const InventoryPage = lazy(() => import("@/pages/InventoryPage"))
 const ExpensesPage = lazy(() => import("@/pages/ExpensesPage"))
 const ReportsPage = lazy(() => import("@/pages/ReportsPage"))
+const SalesPage = lazy(() => import("@/pages/SalesPage"))
+const TeamManagementPage = lazy(() => import("@/pages/TeamManagementPage"))
+const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"))
 
 import DashLayout from "@/components/layouts/DashLayout"
 import { NotFound } from "@/pages/NotFoundPage"
@@ -40,6 +43,9 @@ export const Routes: RouteObject[] = [
       { path: "inventory", element: <InventoryPage /> },
       { path: "expenses", element: <ExpensesPage /> },
       { path: "reports", element: <ReportsPage /> },
+      { path: "sales", element: <SalesPage /> },
+      { path: "notifications", element: <NotificationsPage /> },
+      { path: "team", element: <TeamManagementPage /> },
 
       { path: "*", element: <NotFound /> },
     ],
