@@ -41,8 +41,8 @@ export default function DashHeader() {
       </div>
 
       {/* search */}
-      <div className="max-w-md flex-1">
-        <InputGroup className="h-10 w-full rounded-full border bg-gray-100 px-3">
+      <div className="max-w-xs flex-1">
+        <InputGroup className="h-9 w-full rounded-md border bg-gray-100 px-3">
           <InputGroupAddon align="inline-start" className="pr-2">
             <Search className="h-4 w-4 text-gray-500" />
           </InputGroupAddon>
@@ -58,7 +58,7 @@ export default function DashHeader() {
         <Button
           asChild
           variant="ghost"
-          size="icon"
+          size="icon-lg"
           className={cn(
             "relative rounded-full text-gray-600 hover:bg-gray-100",
             isNotificationsPage &&
@@ -73,7 +73,7 @@ export default function DashHeader() {
 
         <div className="h-6 w-px bg-gray-300" />
 
-        <Link to="/profile" className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3">
           <div className="text-right">
             <p className="text-sm font-medium text-gray-800">{user.name}</p>
             <p className="text-xs text-gray-500">{user.role}</p>
@@ -84,7 +84,7 @@ export default function DashHeader() {
             )}
             <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-        </Link>
+        </div>
       </div>
     </header>
   )
