@@ -13,6 +13,8 @@ const ReportsPage = lazy(() => import("@/pages/ReportsPage"))
 const SalesPage = lazy(() => import("@/pages/SalesPage"))
 const TeamManagementPage = lazy(() => import("@/pages/TeamManagementPage"))
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"))
+const SupportPage = lazy(() => import("@/pages/SupportPage"))
+const SettingsPage = lazy(() => import("@/pages/SettingsPage"))
 
 import DashLayout from "@/components/layouts/DashLayout"
 import { NotFound } from "@/pages/NotFoundPage"
@@ -45,7 +47,9 @@ export const Routes: RouteObject[] = [
       { path: "reports", element: <ReportsPage /> },
       { path: "sales", element: <SalesPage /> },
       { path: "notifications", element: <NotificationsPage /> },
+      { path: "support", element: <SupportPage /> },
       { path: "team", element: <TeamManagementPage /> },
+      { path: "settings", element: <SettingsPage /> },
 
       { path: "*", element: <NotFound /> },
     ],
