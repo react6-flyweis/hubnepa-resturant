@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PageHeader } from "@/components/ui/page-header"
 import { AddStaffDialog, type NewStaff } from "@/components/AddStaffDialog"
 import {
   Table,
@@ -710,38 +711,33 @@ export default function TeamManagementPage() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl font-semibold text-slate-900">
-            Team Management
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Manage staff, schedules, payroll, and access controls.
-          </p>
-        </div>
+      <PageHeader
+        title="Team Management"
+        description="Manage staff, schedules, payroll, and access controls."
+        right={
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="h-10 border-slate-200 bg-white text-slate-600 shadow-sm"
+            >
+              <FileText className="size-4" />
+              Export Payroll
+            </Button>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="h-10 border-slate-200 bg-white text-slate-600 shadow-sm"
-          >
-            <FileText className="size-4" />
-            Export Payroll
-          </Button>
-
-          <Button
-            type="button"
-            size="lg"
-            className="h-10"
-            onClick={() => setAddDialogOpen(true)}
-          >
-            <UserPlus className="size-4" />
-            Add Staff Member
-          </Button>
-        </div>
-      </div>
+            <Button
+              type="button"
+              size="lg"
+              className="h-10"
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <UserPlus className="size-4" />
+              Add Staff Member
+            </Button>
+          </div>
+        }
+      />
 
       <div className="mt-5 inline-flex flex-wrap rounded-lg bg-slate-100 p-1">
         {teamTabs.map((item) => (
