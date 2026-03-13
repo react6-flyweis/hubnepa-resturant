@@ -15,9 +15,9 @@ export function PageHeader({ title, description, right }: PageHeaderProps) {
   return (
     <div className="flex flex-col-reverse items-start justify-between gap-4 sm:flex-row">
       <div>
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        <h1 className="font-display text-3xl font-semibold">{title}</h1>
         {description && (
-          <p className="mt-1 text-sm text-gray-600">{description}</p>
+          <p className="mt-1 text-lg text-gray-600">{description}</p>
         )}
       </div>
       {right && (
