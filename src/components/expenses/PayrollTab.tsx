@@ -45,11 +45,7 @@ const avatarColorMap: Record<ExpenseRecordType, string> = {
   //   summary: "bg-blue-50 text-blue-600",
 }
 
-export function PayrollTab({
-  records,
-  searchQuery = "",
-  onViewInvoice,
-}: PayrollTabProps) {
+export function PayrollTab({ records, searchQuery = "" }: PayrollTabProps) {
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
   const visibleRecords = records.filter((record) => {
@@ -141,10 +137,7 @@ export function PayrollTab({
                     <ExpenseStatusBadge status={record.status} />
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-emerald-600">
-                        {record.actionLabel}
-                      </span>
+                    <div className="flex items-center justify-end gap-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -158,14 +151,18 @@ export function PayrollTab({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <DropdownMenuItem
-                            onClick={() => onViewInvoice(record)}
+                            onClick={() =>
+                              console.log("edit salary", record.id)
+                            }
                           >
-                            View Invoice
+                            Edit Salary
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => console.log("download", record.id)}
+                            onClick={() =>
+                              console.log("view profile", record.id)
+                            }
                           >
-                            Download Receipt
+                            View Profile
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
