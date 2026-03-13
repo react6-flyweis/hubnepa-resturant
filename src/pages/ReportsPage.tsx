@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 
 // report-specific imports
 import {
@@ -293,34 +294,29 @@ export default function ReportsPage() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-4">
-          <div>
-            <h1 className="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-              Reports & Analytics
-            </h1>
-            <p className="mt-1.5 text-sm text-slate-500">
-              Track your restaurant&apos;s performance, revenue, and customer
-              insights.
-            </p>
-          </div>
+        <PageHeader
+          title="Reports & Analytics"
+          description="Track your restaurant's performance, revenue, and customer insights."
+          right={
+            <div className="flex items-center justify-between gap-3">
+              <TimeRangeMenu
+                selectedRange={selectedRange}
+                selectedRangeLabel={selectedRangeLabel}
+                onChange={setSelectedRange}
+              />
 
-          <div className="flex items-center justify-between gap-3">
-            <TimeRangeMenu
-              selectedRange={selectedRange}
-              selectedRangeLabel={selectedRangeLabel}
-              onChange={setSelectedRange}
-            />
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-10 bg-black px-4 text-white"
+              >
+                <Download className="size-4" />
+                Export Report
+              </Button>
+            </div>
+          }
+        />
 
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-10 bg-black px-4 text-white"
-            >
-              <Download className="size-4" />
-              Export Report
-            </Button>
-          </div>
-        </div>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {report.metrics.map((metric) => (
             <ReportMetricCard key={metric.key} metric={metric} />

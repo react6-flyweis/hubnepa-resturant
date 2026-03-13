@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -102,10 +103,7 @@ function NotificationCard({ notification, onDismiss }: NotificationCardProps) {
 
   return (
     <Card
-      className={cn(
-        "rounded-[22px] border border-[#D8E2EF] px-4 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] sm:px-6",
-        notification.isRead ? "bg-white" : "bg-[#FBFDFF]"
-      )}
+      className={cn("p-5", notification.isRead ? "bg-white" : "bg-[#FBFDFF]")}
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 items-start gap-4">
@@ -129,13 +127,13 @@ function NotificationCard({ notification, onDismiss }: NotificationCardProps) {
                 </span>
               )}
             </h2>
-            <p className="mt-3 text-base leading-7 text-[#52627A]">
+            <p className="mt-2 text-base leading-7 text-[#52627A]">
               {notification.description}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 pl-[4.75rem] text-[#8BA0BD] lg:justify-end lg:pl-6">
+        <div className="flex items-center justify-between gap-3 pl-19 text-[#8BA0BD] lg:justify-end lg:pl-6">
           <div className="flex items-center gap-2 text-base font-medium">
             <Clock3 className="size-4" />
             <span>{notification.timeLabel}</span>
@@ -183,27 +181,22 @@ export default function NotificationsPage() {
 
   return (
     <div className="p-4 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-[#0F172A] sm:text-4xl">
-            Notifications
-          </h1>
-          <p className="mt-1.5 max-w-2xl text-sm text-[#61738C]">
-            Stay updated with your restaurant activities.
-          </p>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className="h-10 rounded-2xl border-[#D6DEE8] bg-white px-4 text-sm font-medium text-[#415674] shadow-[0_8px_18px_rgba(15,23,42,0.06)] hover:bg-[#F8FAFC]"
-          onClick={handleMarkAllAsRead}
-          disabled={!hasUnreadNotifications}
-        >
-          Mark all as read
-        </Button>
-      </div>
+      <PageHeader
+        title="Notifications"
+        description="Stay updated with your restaurant activities."
+        right={
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="h-10 rounded-2xl border-[#D6DEE8] bg-white px-4 text-sm font-medium text-[#415674] shadow-[0_8px_18px_rgba(15,23,42,0.06)] hover:bg-[#F8FAFC]"
+            onClick={handleMarkAllAsRead}
+            disabled={!hasUnreadNotifications}
+          >
+            Mark all as read
+          </Button>
+        }
+      />
 
       {notifications.length > 0 ? (
         <div className="mt-6 space-y-6">

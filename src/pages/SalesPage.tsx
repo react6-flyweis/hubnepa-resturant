@@ -21,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import {
   ChartContainer,
   ChartLegend,
@@ -359,28 +360,22 @@ export default function SalesPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="font-display text-4xl leading-none tracking-[-0.03em] text-slate-900">
-            Sales Management
-          </h1>
-          <p className="mt-2 max-w-2xl text-base text-slate-500">
-            Track daily revenue across all delivery platforms and in-house
-            dining.
-          </p>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className="h-10 border-slate-200 px-4 text-slate-700"
-          onClick={handleExportReport}
-        >
-          <Download className="size-4" />
-          <span>Export Report</span>
-        </Button>
-      </div>
+      <PageHeader
+        title="Sales Management"
+        description="Track daily revenue across all delivery platforms and in-house dining."
+        right={
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="h-10 border-slate-200 px-4 text-slate-700"
+            onClick={handleExportReport}
+          >
+            <Download className="size-4" />
+            <span>Export Report</span>
+          </Button>
+        }
+      />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="py-0 xl:row-start-1">

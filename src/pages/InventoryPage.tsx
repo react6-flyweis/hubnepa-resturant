@@ -7,6 +7,7 @@ import { AddCookedFoodDialog } from "@/components/AddCookedFoodDialog"
 import type { InventoryItem as StockItem } from "@/components/StockAdjustmentDialog"
 
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 
 // inventory helpers
@@ -263,37 +264,32 @@ export default function InventoryPage() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl font-semibold text-slate-900">
-            Recipe & Inventory
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Track stock levels, manage recipes, and calculate food costs.
-          </p>
-        </div>
-
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          {activeTab !== "kitchen" && (
+      <PageHeader
+        title="Recipe & Inventory"
+        description="Track stock levels, manage recipes, and calculate food costs."
+        right={
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            {activeTab !== "kitchen" && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
+                onClick={() => setIsAdjustmentOpen(true)}
+              >
+                Stock Adjustment
+              </Button>
+            )}
             <Button
-              variant="outline"
               size="lg"
-              className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
-              onClick={() => setIsAdjustmentOpen(true)}
+              className="h-10 rounded-lg bg-[#059669] px-4 text-white hover:bg-[#047857]"
+              onClick={() => setIsAddOpen(true)}
             >
-              Stock Adjustment
+              <Plus className="size-4" />
+              Add item
             </Button>
-          )}
-          <Button
-            size="lg"
-            className="h-10 rounded-lg bg-[#059669] px-4 text-white hover:bg-[#047857]"
-            onClick={() => setIsAddOpen(true)}
-          >
-            <Plus className="size-4" />
-            Add item
-          </Button>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {inventoryStats.map((stat) => (
@@ -434,7 +430,7 @@ export default function InventoryPage() {
             )}
             <Button
               size="lg"
-              className="h-9 rounded-lg bg-[#059669] px-3 text-white hover:bg-[#047857]"
+              className="h-9 rounded-lg px-3"
               onClick={() => setIsAddOpen(true)}
             >
               <Plus className="size-4" />

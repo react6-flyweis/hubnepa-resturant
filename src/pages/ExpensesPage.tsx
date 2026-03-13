@@ -14,6 +14,7 @@ import type { NewExpense } from "@/components/AddExpenseDialog"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { ViewInvoiceDialog } from "@/components/ViewInvoiceDialog"
 import { cn, formatCurrency } from "@/lib/utils"
@@ -253,35 +254,30 @@ export default function ExpensesPage() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl font-semibold text-slate-900">
-            Expenses & Finance
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Track your spending, salaries, and operational costs.
-          </p>
-        </div>
-
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
-          >
-            <Download className="size-4" />
-            Export Report
-          </Button>
-          <Button
-            size="lg"
-            className="h-10 rounded-lg bg-[#059669] px-4 text-white hover:bg-[#047857]"
-            onClick={() => setAddDialogOpen(true)}
-          >
-            <Plus className="size-4" />
-            Add Expense
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Expenses & Finance"
+        description="Track your spending, salaries, and operational costs."
+        right={
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-10 rounded-lg border-slate-200 bg-white px-4 text-slate-600 hover:bg-slate-50"
+            >
+              <Download className="size-4" />
+              Export Report
+            </Button>
+            <Button
+              size="lg"
+              className="h-10 rounded-lg bg-[#059669] px-4 text-white hover:bg-[#047857]"
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <Plus className="size-4" />
+              Add Expense
+            </Button>
+          </div>
+        }
+      />
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {stats.map((stat) => (
